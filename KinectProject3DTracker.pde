@@ -49,7 +49,6 @@ ArrayList<Integer> locY = new ArrayList();
 ArrayList<Integer> depths = new ArrayList();
 ArrayList<PVector> realWorldPoints = new ArrayList();
 ArrayList<PVector> blueRealWorldPoints = new ArrayList(); 
-//ArrayList<PVector> tempRWP = new ArrayList();
 ArrayList<Long> times = new ArrayList();
 ArrayList<Long> blueTimes = new ArrayList();
 PVector tempRWPAVG = new PVector();
@@ -66,7 +65,6 @@ void draw(){
   context.update();
   context.depthImage().updatePixels();
   context.rgbImage().updatePixels();
- // for(int i = 0; i < context.rgbImage().pixels.length; i++){
   outerloop:
   for(int y=0;y < context.depthHeight();y+=1){
     for(int x=0;x < context.depthWidth();x+=1){
@@ -77,22 +75,14 @@ void draw(){
       
       if(depthMap[i] > 0){
         if(redVal > 175 && blueVal < 100 && greenVal < 100){
-        //println(redVal+" "+blueVal+" "+greenVal);
           realWorldPoint = realWorldMap[i];
-          //println(frameCount+" "+realWorldPoint.x+" "+realWorldPoint.y+" "+realWorldPoint.z);
-          //println(frameCount+" "+xCoord(x, depthMap[i])+" "+yCoord(y, depthMap[i])+" "+depthMap[i]);
-          //println(depthMap[i]+" "+realWorldPoint.z);
           locX.add(x);
           locY.add(y);
           depths.add(depthMap[i]);
-          //realWorldPoints.add(realWorldPoint);
           tempRWP.add(realWorldPoint);
           tempX += realWorldPoint.x;
           tempY += realWorldPoint.y;
           tempD += realWorldPoint.z;
-          //times.add(System.currentTimeMillis());
-          //point(x+1280, y);
-          //println(x+" "+y+" "+depthMap[i]);
           int pigment = (2*frameCount)%255;
           stroke(pigment, 0, 0);
           fill(pigment, 0, 0);
@@ -113,9 +103,7 @@ void draw(){
     }
   }
   if(tempX != 0 && tempY != 0 && tempD != 0){
-    //println(frameCount+": "+tempX/tempRWP.size()+" "+(float)tempY/tempRWP.size()+" "+(float)tempD/tempRWP.size());
     tempRWPAVG.set((float)tempX/(float)tempRWP.size(), (float)tempY/(float)tempRWP.size(), (float)tempD/(float)tempRWP.size());
-    //println(tempRWPAVG);
     ellipse((int)(tempX/(int)tempRWP.size())+1280, (int)tempY/(int)tempRWP.size(), (int)5, (int)5);
     realWorldPoints.add(new PVector(tempRWPAVG.x, tempRWPAVG.y, tempRWPAVG.z));
     times.add(System.currentTimeMillis());
@@ -133,7 +121,6 @@ void draw(){
       textSize(24);
       text("Avg Velocity: "+getAvgVel(), 1500, 500);
     }
-    //println(realWorldPoints);
   }
   fill(255);
   text("0 m/s", 0, 940);
@@ -184,32 +171,24 @@ double getAvgVel() {
     tempRWPVelocity += rwpVelocities.get(j);
     fill(255, 0, 0);
     stroke(255, 0, 0);
-    //ellipse(4*j, 960-(tempRWPVelocity*20), 10, 10);
     if(rwpVelocities.get(j) < 5){
       sumRWPVelocities+=rwpVelocities.get(j);
     }
-    //println(velocities.get(j)+" "+rwpVelocities.get(j)+" ");
-    //println(velocities.get(j)/r wpVelocities.get(j));
   }
-  //print(velocities);
-  //println((sumVelocities/velocities.size()));
   return sumRWPVelocities/rwpVelocities.size();
 }
 void mousePressed() {
-  //saveFrame();
   println("mousePressed:"+ realWorldPoints.size());
   print(realWorldPoints);
   for(int k = 1; k < realWorldPoints.size(); k++){
     deltaTime = (double)(times.get(k)-times.get(k-1))/1000;
     dPos = posChange(locX.get(k), locX.get(k-1), locY.get(k), locY.get(k-1), depths.get(k), depths.get(k-1));
     deltaPos = dPos/1000;
-    //println(deltaPos/deltaTime);
     velocities.add(deltaPos/deltaTime);
     print(k+" ");
     print(realWorldPoints.get(k));
     println(realWorldPoints.get((k-1)));
     rwpDist = realWorldPoints.get(k).dist(realWorldPoints.get(k-1))/1000;
-    //println(deltaPos+" "+rwpDist);
     rwpVelocities.add(rwpDist/deltaTime);
     print(rwpDist+" ");
     println(rwpDist/deltaTime);
@@ -227,11 +206,7 @@ void mousePressed() {
     if(rwpVelocities.get(j) < 5){
       sumRWPVelocities+=rwpVelocities.get(j);
     }
-    //println(velocities.get(j)+" "+rwpVelocities.get(j)+" ");
-    //println(velocities.get(j)/r wpVelocities.get(j));
   }
-  //print(velocities);
-  //println((sumVelocities/velocities.size()));
   println((sumRWPVelocities/rwpVelocities.size()));//*2.23694
   println((realWorldPoints.get(realWorldPoints.size()-1).dist(realWorldPoints.get(1))/1000)/(times.get(realWorldPoints.size()-1)-times.get(1)));
   println("end mousePressed");
@@ -252,12 +227,8 @@ double posChange(int x1, int x2, int y1, int y2, double d1, double d2){
   double vt2 = verticalTheta.get(y2);
   double dX = d1*Math.sin(ht1)-d2*Math.sin(ht2);
   double dY = d1*Math.sin(vt1)-d2*Math.sin(vt2);
-  /*double dhD = d2*Math.cos(ht2)-d1*Math.cos(ht1);
-  double dvD = d2*Math.cos(vt2)-d1*Math.cos(vt1);
-  //double dD = (dhD+dvD)/2;
-  double dD = d2-d1;
-  double change = Math.sqrt((dX*dX)+(dY*dY)+(dD*dD));*/
   double change = Math.sqrt((dX*dX)+(dY*dY)+((d1-d2)*(d1-d2)));
   return change;
 }
+
 
